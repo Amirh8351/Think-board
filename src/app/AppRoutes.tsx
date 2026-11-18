@@ -1,11 +1,18 @@
 
 import { Route, Routes } from "react-router";
+
 import NotesPage from "../features/notes/pages/NotesPage";
+import CreateNotePage from "../features/notes/pages/CreateNotePage";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<NotesPage />} />
+
+      <Route
+        path="/notes/new"
+        element={<CreateNotePage />}
+      />
 
       <Route
         path="*"
