@@ -1,14 +1,23 @@
 
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import NoteForm from "../components/NoteForm";
 import type { NoteFormValues } from "../components/NoteForm";
+import { useCreateNote } from "../hooks/useCreateNote";
 
 export default function CreateNotePage() {
-  function handleCreateNote(values: NoteFormValues) {
-    // Temporary handler for testing the form.
-    console.log("New note:", values);
+  const navigate = useNavigate();
+  const createNoteMutation = useCreateNote();
+
+  async function handleCreateNote(values: NoteFormValues) {
+    try {
+      await createNoteMutation.mutateAsync(values);
+
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to create note:", error);
+    }
   }
 
   return (
@@ -30,7 +39,19 @@ export default function CreateNotePage() {
           Start capturing your next great idea.
         </p>
 
-        <NoteForm onSubmit={handleCreateNote} />
+        {createNoteMutation.isError && (
+          <div
+            role="alert"
+            className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          >
+            Failed to create note. Please try again.
+          </div>
+        )}
+
+        <NoteForm
+          onSubmit={handleCreateNote}
+          isSubmitting={createNoteMutation.isPending}
+        />
       </section>
     </main>
   );
