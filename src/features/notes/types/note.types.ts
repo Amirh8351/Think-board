@@ -16,3 +16,9 @@ export type CreateNoteInput = {
   title: string;
   content: string;
 };
+
+export interface SingleNoteResponse {
+  success: boolean;
+  response: Note;
+  status: number;
+}

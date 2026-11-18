@@ -5,6 +5,7 @@ import type {
   Note,
   NotesResponse,
   CreateNoteInput,
+  SingleNoteResponse,
 } from "../types/note.types";
 
 export async function getNotes(): Promise<Note[]> {
@@ -22,3 +23,17 @@ export async function createNote(
 ): Promise<void> {
   await apiClient.post("/api/notes", input);
 }
+
+
+export async function getNoteById(id: string): Promise<Note> {
+  const { data } = await apiClient.get<SingleNoteResponse>(
+    `/api/notes/${encodeURIComponent(id)}`
+  );
+
+  if (!data.success) {
+    throw new Error("Failed to fetch note");
+  }
+
+  return data.response;
+}
+
