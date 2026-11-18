@@ -52,3 +52,11 @@ export async function updateNote(
     }
   );
 }
+
+
+export async function deleteNote(id: string): Promise<void> {
+  await apiClient.delete(
+    `/api/notes/${encodeURIComponent(id)}`
+  );
+}
+
