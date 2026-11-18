@@ -1,8 +1,16 @@
 
-import { ArrowLeft, Info } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router";
 
+import NoteForm from "../components/NoteForm";
+import type { NoteFormValues } from "../components/NoteForm";
+
 export default function CreateNotePage() {
+  function handleCreateNote(values: NoteFormValues) {
+    // Temporary handler for testing the form.
+    console.log("New note:", values);
+  }
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <Link
@@ -18,22 +26,11 @@ export default function CreateNotePage() {
           Create New Note
         </h1>
 
-        <p className="mt-2 text-slate-500">
+        <p className="mt-2 mb-8 text-slate-500">
           Start capturing your next great idea.
         </p>
 
-        <div className="mt-8 rounded-xl bg-indigo-50 p-5">
-          <div className="flex items-center gap-2 text-indigo-700">
-            <Info size={20} />
-            <h2 className="font-semibold">
-              Form coming soon
-            </h2>
-          </div>
-
-          <p className="mt-2 text-sm text-indigo-600">
-            The note creation form will be added in the next step.
-          </p>
-        </div>
+        <NoteForm onSubmit={handleCreateNote} />
       </section>
     </main>
   );
