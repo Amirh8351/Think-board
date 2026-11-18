@@ -6,6 +6,7 @@ import type {
   NotesResponse,
   CreateNoteInput,
   SingleNoteResponse,
+  UpdateNoteInput,
 } from "../types/note.types";
 
 export async function getNotes(): Promise<Note[]> {
@@ -37,3 +38,17 @@ export async function getNoteById(id: string): Promise<Note> {
   return data.response;
 }
 
+
+export async function updateNote(
+  input: UpdateNoteInput
+): Promise<void> {
+  const { id, title, content } = input;
+
+  await apiClient.put(
+    `/api/notes/${encodeURIComponent(id)}`,
+    {
+      title,
+      content,
+    }
+  );
+}

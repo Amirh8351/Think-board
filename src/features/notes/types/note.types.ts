@@ -22,3 +22,9 @@ export interface SingleNoteResponse {
   response: Note;
   status: number;
 }
+
+export type UpdateNoteInput = {
+  id: string;
+  title: string;
+  content: string;
+};
