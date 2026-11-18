@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Search } from "lucide-react";
 
@@ -6,9 +7,17 @@ import { useNotes } from "../hooks/useNotes";
 
 export default function NotesPage() {
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
 
-  const { data: notes, isPending, isError, error, refetch } = useNotes();
+  const {
+    data: notes,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useNotes();
 
+  // Filter notes by title or content
   const filteredNotes = (notes ?? []).filter((note) => {
     const searchText = search.trim().toLowerCase();
 
@@ -18,14 +27,44 @@ export default function NotesPage() {
     );
   });
 
+  // Sort filtered notes
+  const sortedNotes = [...filteredNotes].sort((a, b) => {
+    if (sortBy === "newest") {
+      return (
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+      );
+    }
+
+    if (sortBy === "oldest") {
+      return (
+        new Date(a.createdAt).getTime() -
+        new Date(b.createdAt).getTime()
+      );
+    }
+
+    if (sortBy === "updated") {
+      return (
+        new Date(b.updatedAt).getTime() -
+        new Date(a.updatedAt).getTime()
+      );
+    }
+
+    return 0;
+  });
+
+  // Loading state
   if (isPending) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <p className="text-center text-slate-500">Loading notes...</p>
+        <p className="text-center text-slate-500">
+          Loading notes...
+        </p>
       </main>
     );
   }
 
+  // Error state
   if (isError) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -37,12 +76,14 @@ export default function NotesPage() {
             Failed to load notes
           </h2>
 
-          <p className="mt-2 text-sm text-red-600">{error.message}</p>
+          <p className="mt-2 text-sm text-red-600">
+            {error.message}
+          </p>
 
           <button
             type="button"
             onClick={() => void refetch()}
-            className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
           >
             Try Again
           </button>
@@ -53,41 +94,81 @@ export default function NotesPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      {/* Page Header */}
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900">My Notes</h2>
+        <h2 className="text-3xl font-bold text-slate-900">
+          My Notes
+        </h2>
 
         <p className="mt-2 text-slate-500">
           Capture your ideas, one note at a time.
         </p>
       </div>
 
-      <div className="mb-8">
-        <label htmlFor="search-notes" className="sr-only">
-          Search notes
-        </label>
+      {/* Search and Sort */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        {/* Search */}
+        <div className="w-full sm:max-w-md">
+          <label
+            htmlFor="search-notes"
+            className="sr-only"
+          >
+            Search notes
+          </label>
 
-        <div className="relative max-w-md">
-          <Search
-            size={20}
-            aria-hidden="true"
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+          <div className="relative">
+            <Search
+              size={20}
+              aria-hidden="true"
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
 
-          <input
-            id="search-notes"
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search notes..."
-            className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-12 pr-4 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-          />
+            <input
+              id="search-notes"
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search notes..."
+              className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-12 pr-4 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            />
+          </div>
+
+          <p className="mt-2 text-sm text-slate-500">
+            {filteredNotes.length} notes found
+          </p>
         </div>
 
-        <p className="mt-2 text-sm text-slate-500">
-          {filteredNotes.length} notes found
-        </p>
+        {/* Sort */}
+        <div className="w-full sm:w-52">
+          <label
+            htmlFor="sort-notes"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Sort By
+          </label>
+
+          <select
+            id="sort-notes"
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value)}
+            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          >
+            <option value="newest">
+              Newest First
+            </option>
+
+            <option value="oldest">
+              Oldest First
+            </option>
+
+            <option value="updated">
+              Recently Updated
+            </option>
+          </select>
+        </div>
       </div>
 
+      {/* Notes List */}
       {notes.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <h3 className="text-lg font-semibold text-slate-800">
@@ -98,7 +179,7 @@ export default function NotesPage() {
             Create your first note to get started.
           </p>
         </div>
-      ) : filteredNotes.length === 0 ? (
+      ) : sortedNotes.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <h3 className="text-lg font-semibold text-slate-800">
             No matching notes found
@@ -110,8 +191,11 @@ export default function NotesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredNotes.map((note) => (
-            <NoteCard key={note.id} note={note} />
+          {sortedNotes.map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+            />
           ))}
         </div>
       )}
