@@ -37,13 +37,14 @@ export default function NoteCard({ note }: NoteCardProps) {
         </span>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <Link
+            to={`/notes/${note.id}/edit`}
             aria-label={`Edit ${note.title}`}
+            title="Edit note"
             className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
           >
             <Pencil size={18} />
-          </button>
+          </Link>   
 
           <button
             type="button"
