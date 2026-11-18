@@ -17,7 +17,7 @@ export default function NoteCard({ note }: NoteCardProps) {
       </h2>
 
       <p className="mb-6 line-clamp-3 flex-1 whitespace-pre-line break-words text-sm leading-6 text-slate-600">
-        {note.description}
+        {note.content}
       </p>
 
       <div className="flex items-center justify-between border-t border-slate-100 pt-4">
