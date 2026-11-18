@@ -1,4 +1,3 @@
-
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { Link, useParams } from "react-router";
 
@@ -7,20 +6,12 @@ import { useNote } from "../hooks/useNote";
 export default function NoteDetailsPage() {
   const { id } = useParams<{ id: string }>();
 
-  const {
-    data: note,
-    isPending,
-    isError,
-    error,
-    refetch,
-  } = useNote(id);
+  const { data: note, isPending, isError, error, refetch } = useNote(id);
 
   if (!id) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="text-center text-red-600">
-          Invalid note ID.
-        </p>
+        <p className="text-center text-red-600">Invalid note ID.</p>
       </main>
     );
   }
@@ -28,9 +19,7 @@ export default function NoteDetailsPage() {
   if (isPending) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="text-center text-slate-500">
-          Loading note...
-        </p>
+        <p className="text-center text-slate-500">Loading note...</p>
       </main>
     );
   }
@@ -42,13 +31,9 @@ export default function NoteDetailsPage() {
           role="alert"
           className="rounded-xl border border-red-200 bg-red-50 p-6 text-center"
         >
-          <h2 className="font-semibold text-red-700">
-            Failed to load note
-          </h2>
+          <h2 className="font-semibold text-red-700">Failed to load note</h2>
 
-          <p className="mt-2 text-sm text-red-600">
-            {error.message}
-          </p>
+          <p className="mt-2 text-sm text-red-600">{error.message}</p>
 
           <button
             type="button"
@@ -79,15 +64,14 @@ export default function NoteDetailsPage() {
           </h1>
 
           <div className="flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              disabled
+            <Link
+              to={`/notes/${note.id}/edit`}
               aria-label="Edit note"
-              title="Edit will be available soon"
-              className="rounded-lg p-2 text-slate-400 disabled:cursor-not-allowed"
+              title="Edit note"
+              className="rounded-lg p-2 text-indigo-600 transition-colors hover:bg-indigo-50"
             >
               <Pencil size={20} />
-            </button>
+            </Link>
 
             <button
               type="button"
@@ -102,13 +86,9 @@ export default function NoteDetailsPage() {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-400">
-          <span>
-            Created: {new Date(note.createdAt).toLocaleDateString()}
-          </span>
+          <span>Created: {new Date(note.createdAt).toLocaleDateString()}</span>
 
-          <span>
-            Updated: {new Date(note.updatedAt).toLocaleDateString()}
-          </span>
+          <span>Updated: {new Date(note.updatedAt).toLocaleDateString()}</span>
         </div>
 
         <div className="my-6 border-t border-slate-200" />

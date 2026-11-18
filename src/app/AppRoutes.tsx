@@ -1,24 +1,21 @@
-
 import { Route, Routes } from "react-router";
 
 import NotesPage from "../features/notes/pages/NotesPage";
 import CreateNotePage from "../features/notes/pages/CreateNotePage";
 import NoteDetailsPage from "../features/notes/pages/NoteDetailsPage";
 
+import EditNotePage from "../features/notes/pages/EditNotePage";
+
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<NotesPage />} />
 
-      <Route
-        path="/notes/new"
-        element={<CreateNotePage />}
-      />
+      <Route path="/notes/new" element={<CreateNotePage />} />
 
-      <Route
-        path="/notes/:id"
-        element={<NoteDetailsPage />}
-      />
+      <Route path="/notes/:id/edit" element={<EditNotePage />} />
+
+      <Route path="/notes/:id" element={<NoteDetailsPage />} />
 
       <Route
         path="*"
