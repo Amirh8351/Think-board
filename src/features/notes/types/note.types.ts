@@ -1,4 +1,3 @@
-
 export interface Note {
   id: string;
   title: string;
@@ -12,3 +11,8 @@ export interface NotesResponse {
   response: Note[];
   status: number;
 }
+
+export type CreateNoteInput = {
+  title: string;
+  content: string;
+};
