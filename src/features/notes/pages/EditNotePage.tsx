@@ -5,14 +5,54 @@ import NoteForm from "../components/NoteForm";
 import type { NoteFormValues } from "../components/NoteForm";
 import { useNote } from "../hooks/useNote";
 
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
+
+import { updateNote } from "../api/notesApi";
+
 export default function EditNotePage() {
   const { id } = useParams<{ id: string }>();
 
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
   const { data: note, isPending, isError, error, refetch } = useNote(id);
 
-  function handleEditNote(values: NoteFormValues) {
-    // Temporary handler. No PUT request is sent.
-    console.log("Updated note values:", values);
+  async function handleEditNote(values: NoteFormValues) {
+    if (!id || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      await updateNote({
+        id,
+        title: values.title,
+        content: values.content,
+      });
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["notes"],
+          exact: true,
+        }),
+
+        queryClient.invalidateQueries({
+          queryKey: ["notes", id],
+        }),
+      ]);
+
+      navigate(`/notes/${id}`);
+    } catch (error) {
+      console.error("Failed to update note:", error);
+      setSubmitError("Failed to update note. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (!id) {
@@ -79,6 +119,15 @@ export default function EditNotePage() {
           </div>
         </div>
 
+        {submitError && (
+          <div
+            role="alert"
+            className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          >
+            {submitError}
+          </div>
+        )}
+
         <NoteForm
           key={note.id}
           initialValues={{
@@ -87,6 +136,7 @@ export default function EditNotePage() {
           }}
           onSubmit={handleEditNote}
           submitLabel="Update Note"
+          isSubmitting={isSubmitting}
         />
       </section>
     </main>
