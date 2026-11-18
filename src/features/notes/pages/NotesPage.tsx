@@ -1,22 +1,27 @@
+import { useState } from "react";
+import { Search } from "lucide-react";
 
 import NoteCard from "../components/NoteCard";
 import { useNotes } from "../hooks/useNotes";
 
 export default function NotesPage() {
-  const {
-    data: notes,
-    isPending,
-    isError,
-    error,
-    refetch,
-  } = useNotes();
+  const [search, setSearch] = useState("");
+
+  const { data: notes, isPending, isError, error, refetch } = useNotes();
+
+  const filteredNotes = (notes ?? []).filter((note) => {
+    const searchText = search.trim().toLowerCase();
+
+    return (
+      note.title.toLowerCase().includes(searchText) ||
+      note.content.toLowerCase().includes(searchText)
+    );
+  });
 
   if (isPending) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <p className="text-center text-slate-500">
-          Loading notes...
-        </p>
+        <p className="text-center text-slate-500">Loading notes...</p>
       </main>
     );
   }
@@ -32,9 +37,7 @@ export default function NotesPage() {
             Failed to load notes
           </h2>
 
-          <p className="mt-2 text-sm text-red-600">
-            {error.message}
-          </p>
+          <p className="mt-2 text-sm text-red-600">{error.message}</p>
 
           <button
             type="button"
@@ -51,12 +54,37 @@ export default function NotesPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900">
-          My Notes
-        </h2>
+        <h2 className="text-3xl font-bold text-slate-900">My Notes</h2>
 
         <p className="mt-2 text-slate-500">
           Capture your ideas, one note at a time.
+        </p>
+      </div>
+
+      <div className="mb-8">
+        <label htmlFor="search-notes" className="sr-only">
+          Search notes
+        </label>
+
+        <div className="relative max-w-md">
+          <Search
+            size={20}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+
+          <input
+            id="search-notes"
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search notes..."
+            className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-12 pr-4 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          />
+        </div>
+
+        <p className="mt-2 text-sm text-slate-500">
+          {filteredNotes.length} notes found
         </p>
       </div>
 
@@ -70,9 +98,19 @@ export default function NotesPage() {
             Create your first note to get started.
           </p>
         </div>
+      ) : filteredNotes.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+          <h3 className="text-lg font-semibold text-slate-800">
+            No matching notes found
+          </h3>
+
+          <p className="mt-2 text-slate-500">
+            Try searching for something else.
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {notes.map((note) => (
+          {filteredNotes.map((note) => (
             <NoteCard key={note.id} note={note} />
           ))}
         </div>
